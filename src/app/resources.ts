@@ -29,6 +29,9 @@ export default window["__resources"] = [
 
 function loadText(url :string) :Promise<string> {
   return fetch(url).then(r => {
+
+    console.log(url);
+
     if (r.status >= 200 && r.status <= 299) {
       return r.text()
     } else {

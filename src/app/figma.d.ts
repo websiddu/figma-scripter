@@ -4,10 +4,16 @@ declare global {
   // Global variable with Figma's plugin API.
   const figma: PluginAPI
   const __html__: string
+  const __uiFiles__: {
+    [key: string]: string
+  }
 
   interface PluginAPI {
     readonly apiVersion: "1.0.0"
     readonly command: string
+
+    readonly fileKey: string | undefined
+
     readonly viewport: ViewportAPI
     closePlugin(message?: string): void
 
@@ -181,6 +187,7 @@ declare global {
     readonly color: RGBA
     readonly offset: Vector
     readonly radius: number
+    readonly spread?: number
     readonly visible: boolean
     readonly blendMode: BlendMode
   }
@@ -355,7 +362,6 @@ declare global {
   }
 
   type BlendMode =
-    "PASS_THROUGH" |
     "NORMAL" |
     "DARKEN" |
     "MULTIPLY" |
@@ -423,6 +429,14 @@ declare global {
 
   interface Easing {
     readonly type: "EASE_IN" | "EASE_OUT" | "EASE_IN_AND_OUT" | "LINEAR"
+    readonly easingFunctionCubicBezier?: EasingFunctionBezier
+  }
+
+  interface EasingFunctionBezier {
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number
   }
 
   type OverflowDirection = "NONE" | "HORIZONTAL" | "VERTICAL" | "BOTH"
@@ -504,11 +518,12 @@ declare global {
 
     resize(width: number, height: number): void
     resizeWithoutConstraints(width: number, height: number): void
+    rescale(scale: number): void
   }
 
   interface BlendMixin {
     opacity: number
-    blendMode: BlendMode
+    blendMode: "PASS_THROUGH" | BlendMode
     isMask: boolean
     effects: ReadonlyArray<Effect>
     effectStyleId: string
@@ -747,7 +762,7 @@ declare global {
   interface InstanceNode extends DefaultFrameMixin  {
     readonly type: "INSTANCE"
     clone(): InstanceNode
-    masterComponent: ComponentNode
+    mainComponent: ComponentNode | null
     scaleFactor: number
   }
 
@@ -805,7 +820,7 @@ declare global {
     readonly type: StyleType
     name: string
     description: string
-    remote: boolean
+    readonly remote: boolean
     readonly key: string // The key to use with "importStyleByKeyAsync"
     remove(): void
     getPublishStatusAsync(): Promise<PublishStatus>

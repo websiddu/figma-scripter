@@ -13,5 +13,5 @@ export const scripter = {
 };
 export const figma = {
   filename: "figma.d.ts",
-  version: "MV8+GqT9BiKjnffdIoty94fCZBE"
+  version: "Psr08dVYe3ZjEsFHQK7Cz17qh8g"
 };
